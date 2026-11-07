@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send("Hello from Harness CI/CD");
+  res.send("Learning Harness CICD using a node app");
 });
 
 app.listen(3000, () => {
