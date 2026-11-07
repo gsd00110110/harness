@@ -268,12 +268,4 @@ Gunasekar
 
 Harness CI/CD Learning Project
 
-
-Then push it:
-
-git add README.md
-git commit -m "docs: update README for trigger validation"
-git push origin main
-
-
-This is a good trigger test because it changes only documentation, making it easy to verify that Harness starts a pipeline from a simple Git push. 🚀
+ 
