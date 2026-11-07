@@ -51,10 +51,10 @@ metadata:
   name: nodeapp
   namespace: nodeapp
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: nodeapp
   ports:
     - port: 80
       targetPort: 3000
-      nodePort: 30080
+
