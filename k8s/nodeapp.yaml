@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: nodeapp
-          image: gsd00110110/harness:v2
+          image: gsd00110110/harness:v3
           ports:
             - containerPort: 3000
           readinessProbe:
