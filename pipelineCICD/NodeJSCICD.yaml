@@ -1,0 +1,74 @@
+pipeline:
+  id: nodejs_ci
+  name: NodeJSCICD
+  description: Build, test, and push the Node.js app image to Docker Hub, then deploy it to the local Kubernetes cluster.
+  tags:
+    ai_generated: ""
+  clone:
+    enabled: true
+    connector: account.httpsgithubcomgsd00110110harness
+    repo: gsd00110110/harness
+    ref:
+      type: branch
+      name: main
+  stages:
+    - id: build_test_push
+      name: Build Test and Push
+      runtime: cloud
+      platform:
+        os: linux
+        arch: amd64
+      steps:
+        - id: npm_install
+          name: NPM Install
+          run:
+            container:
+              image: node:20
+            script: npm install
+        - id: npm_test
+          name: NPM Test
+          run-test:
+            container:
+              image: node:20
+            script: npm test
+        - id: push_image
+          name: Build and Push Image
+          build:
+            uses: buildAndPushToDocker
+            with:
+              connector: account.httpshubdockercomrepositorydockergsd00110110harnessgeneral
+              repo: gsd00110110/harness
+              tags:
+                - v3
+    - id: deploy_nodeapp
+      name: Deploy NodeApp
+      needs:
+        - build_test_push
+      runtime:
+        kubernetes:
+          connector: account.local_docker_k8s
+          namespace: default
+      service:
+        items:
+          - nodeapp
+      environment:
+        items:
+          - id: local
+            deploy-to: local_k8s
+      steps:
+        - id: rolling_deploy
+          name: Kubernetes Rolling Deploy
+          deploy:
+            uses: k8sRollingDeployStep
+      rollback:
+        - group:
+            id: rolling_rollback
+            name: Kubernetes Rolling Rollback
+            steps:
+              - id: k8s_rolling_rollback
+                name: Kubernetes Rolling Rollback
+                deploy:
+                  uses: k8sRollingRollbackStep
+      on-failure:
+        errors: all
+        action: stage-rollback
